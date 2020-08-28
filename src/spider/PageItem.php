@@ -14,13 +14,13 @@ use Composer\Autoload\ClassLoader;
 use Gsons\Console;
 use think\Db;
 
-class PageItem extends \Thread
+class PageItem extends \Worker
 {
     private $fieldArr;
 
     private $contentUrl;
 
-    public $after_field_func;
+    public $on_field;
 
     public $after_content_func;
 
@@ -39,26 +39,34 @@ class PageItem extends \Thread
     private $dbConfig;
 
     /**
+     * @var Store;
+     */
+    private $store;
+
+
+    /**
      * PageItem constructor.
      * @param $contentUrl
      * @param $fieldArr
      * @param $loader ClassLoader
-     * @param $dbConfig ;
+     * @param $dbConfig
+     * @param $store Store
      */
-    public function __construct($contentUrl, $fieldArr, $loader, $dbConfig)
+    public function __construct($contentUrl, $fieldArr, $loader, $dbConfig, $store)
     {
         $this->fieldArr = $fieldArr;
         $this->contentUrl = $contentUrl;
         $this->times = self::MAX_TIME;
         $this->loader = $loader;
         $this->dbConfig = $dbConfig;
+        $this->store = $store;
     }
 
 
     public function run()
     {
         $this->loader->register();
-        $db_config=json_decode(json_encode($this->dbConfig,true));
+        $db_config = json_decode(json_encode($this->dbConfig), true);
         Db::setConfig($db_config);
         while ($this->times) {
             try {
@@ -84,15 +92,34 @@ class PageItem extends \Thread
             $data = [];
             foreach ($this->fieldArr as $vo) {
                 $type = isset($vo['selector_type']) ? $vo['selector_type'] : 'xpath';
-                $data[$vo['name']] = Selector::select($content, $vo['selector'], $type);
-            }
+                $_temp = Selector::select($content, $vo['selector'], $type);
+                if ($_temp === false) {
+                    $_temp = null;
+                }
 
-            if ($this->after_field_func) {
-                $data = call_user_func($this->after_field_func, $data);
+                $require = isset($vo['require']) ? $vo['require'] : false;
+                if ($require && is_null($_temp)) {
+                    $data = false;
+                    break;
+                }
+
+                $repeated = isset($vo['repeated']) ? $vo['repeated'] : false;
+                if ($repeated && is_string($_temp)) {
+                    $_temp = [$_temp];
+                } else if (!$repeated && is_array($_temp)) {
+                    $_temp = $_temp[0];
+                }
+                $data[$vo['name']] = $_temp;
+            }
+            if ($this->on_field) {
+                $data = call_user_func($this->on_field, $data);
                 if (is_array($data)) {
+                    $this->store->add();
+                    //$this->store->push($data);
                     Db::table($db_config['table'])->insert($data);
                 }
             }
         }
     }
+
 }

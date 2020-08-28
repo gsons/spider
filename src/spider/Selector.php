@@ -181,27 +181,24 @@ class Selector
      * @author seatle <seatle@foxmail.com>
      * @created time :2016-10-26 12:53
      */
-    private static function _regex_select($html, $selector, $remove = false)
+    public static function _regex_select($html, $selector, $remove = false)
     {
-//        preg_match_all($selector, $html, $out);
-//        print_r($out);exit;
         if (@preg_match_all($selector, $html, $out) === false) {
             self::$error = "the selector in the regex(\"{$selector}\") syntax errors";
             return null;
         }
-
         $count = count($out);
         $result = array();
         // 一个都没有匹配到
         if ($count == 0) {
             return null;
         } // 只匹配一个，就是只有一个 ()
-        elseif ($count == 1) {
+        elseif ($count <= 2) {
             // 删除的话取匹配到的所有内容
             if ($remove) {
                 $result = $out[0];
             } else {
-                $result = $out[0];
+                $result = $out[1];
             }
         } else {
             for ($i = 1; $i < $count; $i++) {

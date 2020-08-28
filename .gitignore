@@ -3,3 +3,5 @@ vendor
 cache
 *.log
 php_error.log
+t.php
+*.db

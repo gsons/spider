@@ -16,12 +16,10 @@ class PageList
 
     public function __construct($content, $preg_content_url, $preg_list_url)
     {
-        $contentUrlArr = Selector::select($content, $preg_content_url, 'regex');
-
+        $contentUrlArr = Selector::_regex_select($content, $preg_content_url, true);
         if ($contentUrlArr) $this->contentUrlList = is_string($contentUrlArr) ? [$contentUrlArr] : $contentUrlArr;
 
-        $listUrlArr = Selector::select($content, $preg_list_url, 'regex');
-
+        $listUrlArr = Selector::_regex_select($content, $preg_list_url, true);
         if ($listUrlArr) $this->listUrlList = is_string($listUrlArr) ? [$listUrlArr] : $listUrlArr;
     }
 

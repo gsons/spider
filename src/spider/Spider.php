@@ -10,9 +10,8 @@ namespace Gsons\spider;
 
 use Gsons\HttpCurl;
 use Composer\Autoload\ClassLoader;
-use think\Cache;
-use think\Db;
 use Gsons\Console;
+use think\Db;
 
 class Spider
 {
@@ -66,7 +65,8 @@ class Spider
     static function init($config)
     {
 
-        // 数据库配置信息设置（全局有效）
+        Db::setConfig($config['db']);
+
         Console::init();
 
         foreach ($config['list_url'] as $url) {
@@ -82,7 +82,7 @@ class Spider
         self::$SLEEP_TIME = isset($config['sleep_time']) ? $config['sleep_time'] : self::$SLEEP_TIME;
     }
 
-    public $after_field_func;
+    public $on_field;
 
     /**
      * @param $config
@@ -93,7 +93,7 @@ class Spider
     {
         self::init($config);
         $curl = new HttpCurl([], false);
-        $content_num = 0;
+        $store=new Store();
         $itemObjArr = [];
         while (1) {
             if (count(self::$listUrlList) >= 1) {
@@ -155,15 +155,14 @@ class Spider
                     $contentUrl = array_shift(self::$contentUrlArr);
                     if (!$contentUrl) break;
                     $key_vo = md5($contentUrl);
-                    $itemObjArr[$key_vo] = new PageItem($contentUrl, $config['field_arr'], $loader,$config['db']);
-                    $itemObjArr[$key_vo]->after_field_func = $this->after_field_func;
+                    $itemObjArr[$key_vo] = new PageItem($contentUrl, $config['field_arr'], $loader, $config['db'], $store);
+                    $itemObjArr[$key_vo]->on_field = $this->on_field;
                     $itemObjArr[$key_vo]->start();
-                    $content_num++;
                 }
-                Console::log("累计爬取总数:" . $content_num);
                 //时间限制 可以根据网站qps设置
                 usleep(self::$SLEEP_TIME * 1000);
             }
+            Console::log("累计爬取总数:" . $store->count );
 
             if (count(self::$listUrlList) < 1 && count(self::$contentUrlArr) < 1) {
                 break;
