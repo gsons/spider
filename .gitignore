@@ -1,0 +1,5 @@
+.idea
+vendor
+cache
+*.log
+php_error.log

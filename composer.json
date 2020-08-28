@@ -1,0 +1,19 @@
+{
+  "require": {
+    "curl/curl": "^2.2",
+    "topthink/think-cache": "^1.1",
+    "ext-curl": "*",
+    "ext-json": "*",
+    "ext-dom": "*",
+    "ext-xmlreader": "*",
+    "ext-mbstring": "*",
+    "ext-iconv": "*",
+    "ext-pthreads": "*",
+    "topthink/think-orm": "v1.2.17"
+  },
+  "autoload": {
+    "psr-4": {
+      "Gsons\\": "src"
+    }
+  }
+}
