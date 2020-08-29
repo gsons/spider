@@ -9,7 +9,7 @@ $db_sqlite_config = [
     'table' => 'article',
     'dsn' => 'sqlite:article.db',
     'charset' => 'utf8',
-    'debug' => true,
+    'debug' => false,
 ];
 
 
@@ -17,7 +17,7 @@ $config2 = [
     'host' => 'http://www.gdyunan.gov.cn',
     'max_list_time' => 5,
     'max_content_time' => 3,
-    'max_request' => 10,
+    'max_request' => 100,
     'sleep_time' => 1000,
     'list_url' => ['http://www.gdyunan.gov.cn/ynxrmzf/xwzx/zhxw/index.html'],
     'preg_content' => '/\/ynxrmzf\/xwzx\/\w+\/content\/post_\d+\.html/',
@@ -34,7 +34,7 @@ $config3 = [
     'host' => 'https://www.88ys.com',
     'max_list_time' => 5,
     'max_content_time' => 3,
-    'max_request' => 5,
+    'max_request' => 1,
     'sleep_time' => 1000,
     'list_url' => [
         'https://www.88ys.com/vod-type-id-1-pg-1.html',
@@ -49,9 +49,9 @@ $config3 = [
     ],
     'db' => $db_sqlite_config
 ];
-$arrArr=[];
+
 $spider = new \Gsons\spider\Spider();
-$spider->on_field = function ($data) use ($arrArr){
+$spider->on_field = function ($data){
     foreach ($data as &$vo) {
         if (is_string($vo)) $vo = trim($vo);
     }

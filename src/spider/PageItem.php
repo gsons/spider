@@ -71,8 +71,9 @@ class PageItem extends \Worker
         while ($this->times) {
             try {
                 $curl = new HttpCurl([], false);
-                $curl->setReferrer($this->contentUrl);
+                //$curl->setReferrer($this->contentUrl);
                 $curl->get($this->contentUrl);
+                $curl->close();
                 if ($curl->error) {
                     throw  new \ErrorException($curl->error_message);
                 }
@@ -114,10 +115,26 @@ class PageItem extends \Worker
             if ($this->on_field) {
                 $data = call_user_func($this->on_field, $data);
                 if (is_array($data)) {
-                    $this->store->add();
                     //$this->store->push($data);
                     Db::table($db_config['table'])->insert($data);
                 }
+            }
+            $this->store->add();
+        }
+    }
+
+    private function doAdd($table, $data)
+    {
+        static $time = 5;
+        try {
+            Db::table($table)->insert($data);
+        } catch (\Exception $e) {
+            Console::error($e->getMessage());
+            $time--;
+            if ($time > 0) {
+                sleep(rand(1, 3));
+                Console::log('doAdd data again! ' . (5 - $time));
+                $this->doAdd($table, $data);
             }
         }
     }

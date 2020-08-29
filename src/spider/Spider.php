@@ -25,7 +25,7 @@ class Spider
      */
     static $MAX_CONTENT_TIME = 3;
 
-    static $MAX_REQUEST = 10;
+    static $MAX_REQUEST = 1;
 
     static $SLEEP_TIME = 100;
 
@@ -92,16 +92,16 @@ class Spider
     public function run($config, $loader)
     {
         self::init($config);
-        $curl = new HttpCurl([], false);
-        $store=new Store();
-        $itemObjArr = [];
+        $store = new Store();
         while (1) {
             if (count(self::$listUrlList) >= 1) {
                 $listUrl = array_shift(self::$listUrlList);
                 $list_key = md5($listUrl);
                 Console::log('start spider list url ' . $listUrl);
-                $curl->setReferrer($config['host']);
+                $curl = new HttpCurl([], false);
+                //$curl->setReferrer($config['host']);
                 $curl->get($listUrl);
+                $curl->close();
                 $listContent = $curl->response;
 
                 //如果请求错误再爬一次 当累计错误超过最大值时 就停止爬当前URL
@@ -151,6 +151,7 @@ class Spider
             }
             if (count(self::$contentUrlArr) >= 1) {
                 //拿到n个内容页并发执行
+                $itemObjArr = [];
                 for ($i = 0; $i < self::$MAX_REQUEST; $i++) {
                     $contentUrl = array_shift(self::$contentUrlArr);
                     if (!$contentUrl) break;
@@ -162,7 +163,7 @@ class Spider
                 //时间限制 可以根据网站qps设置
                 usleep(self::$SLEEP_TIME * 1000);
             }
-            Console::log("累计爬取总数:" . $store->count );
+            Console::log("累计爬取总数:" . $store->count);
 
             if (count(self::$listUrlList) < 1 && count(self::$contentUrlArr) < 1) {
                 break;
