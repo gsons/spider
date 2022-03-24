@@ -6,7 +6,7 @@
  * Time: 3:29
  */
 
-namespace Gsons;
+namespace Gsons\lib;
 
 
 class Console

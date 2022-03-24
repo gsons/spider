@@ -6,7 +6,7 @@
  * Time: 0:05
  */
 
-namespace Gsons;
+namespace Gsons\lib;
 
 
 use Curl\Curl;
@@ -26,7 +26,7 @@ class HttpCurl extends Curl
         '112.94.105.142'
     ];
 
-    const TIME_OUT = 15;
+    const TIME_OUT = 5;
 
     public function __construct($config = [], $init = true)
     {
@@ -42,6 +42,7 @@ class HttpCurl extends Curl
         $this->setOpt(CURLOPT_SSL_VERIFYPEER, false);
         $this->setOpt(CURLOPT_HTTPPROXYTUNNEL, true);
         $this->setOpt(CURLOPT_SSL_VERIFYHOST, false);
+        $this->setOpt(CURLOPT_CONNECTTIMEOUT, self::TIME_OUT);
         $this->setOpt(CURLOPT_TIMEOUT, self::TIME_OUT);
 
         if (isset($config['user_agent']) && is_array($config['user_agent'])) {

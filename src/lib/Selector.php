@@ -6,7 +6,7 @@
  * Time: 0:10
  */
 
-namespace Gsons\spider;
+namespace Gsons\lib;
 
 use DOMDocument;
 use DOMXpath;
