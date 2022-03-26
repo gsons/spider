@@ -16,11 +16,18 @@ class Store extends \Threaded
 
     public $contentUrlArr = [];
 
+    public $listCount=0;
+
+    public $contentCount=0;
+
+    public $listCountFail=0;
+
+    public $contentCountFail=0;
+
+    //正在请求数
     public $count=0;
 
-    public function calcCount($num){
-        $this->count+=$num;
-    }
+
 
     /**
      * @var \Volatile

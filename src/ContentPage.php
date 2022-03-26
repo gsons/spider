@@ -30,7 +30,7 @@ class ContentPage extends Thread
     {
         $this->spider = $spider;
         $this->contentUrl = $contentUrl;
-        $this->spider->store->calcCount(1);
+        $this->spider->store->count++;
     }
 
     public function run()
@@ -40,11 +40,14 @@ class ContentPage extends Thread
         $curl->setReferrer($this->contentUrl);
         $curl->get($this->contentUrl);
         $curl->close();
-        $this->spider->store->calcCount(-1);
+        $this->spider->store->count--;
         if ($curl->error) {
+            $this->spider->store->contentCountFail++;
             Console::error("request content url {$this->contentUrl} failed,{$curl->error_message}");
+            $this->spider->store->contentStack[]=$this->contentUrl;
             return false;
         } else {
+            $this->spider->store->contentCount++;
             Console::log("request content url {$this->contentUrl} success");
         }
 

@@ -28,35 +28,38 @@ class ListPage extends Thread
     {
         $this->spider = $spider;
         $this->listUrl = $listUrl;
-        $this->spider->store->calcCount(1);
+        $this->spider->store->count++;
     }
 
     private function storeUrlArr()
     {
-        $host=$this->spider->config['host'];
+        $host = $this->spider->config['host'];
         $curl = new HttpCurl([], false);
         $curl->setReferrer($host);
         $curl->get($this->listUrl);
         $curl->close();
-        $this->spider->store->calcCount(-1);
-        if($curl->error){
+        $this->spider->store->count--;
+        if ($curl->error) {
+            $this->spider->store->listCountFail++;
             Console::error("request list url {$this->listUrl} failed,{$curl->error_message}");
+            $this->spider->store->listStack[]=$this->listUrl;
             return false;
-        }else{
+        } else {
+            $this->spider->store->listCount++;
             Console::log("request list url {$this->listUrl} success");
         }
         $listContent = $curl->response;
         $listUrlArr = Selector::_regex_select($listContent, $this->spider->config['preg_list'], true);
         if (!empty($listUrlArr)) {
             foreach ($listUrlArr as $url) {
-                $url = strpos($url, $host) !== false ? $url :$host . $url;
+                $url = strpos($url, $host) !== false ? $url : $host . $url;
                 $this->spider->store->setList($url);
             }
         }
         $contentUrlArr = Selector::_regex_select($listContent, $this->spider->config['preg_content'], true);
         if (!empty($contentUrlArr)) {
             foreach ($contentUrlArr as $url) {
-                $url = strpos($url, $host) !== false ? $url :$host . $url;
+                $url = strpos($url, $host) !== false ? $url : $host . $url;
                 $this->spider->store->setContent($url);
             }
         }

@@ -26,7 +26,7 @@ class HttpCurl extends Curl
         '112.94.105.142'
     ];
 
-    const TIME_OUT = 5;
+    const TIME_OUT = 15;
 
     public function __construct($config = [], $init = true)
     {

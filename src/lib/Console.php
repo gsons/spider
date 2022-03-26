@@ -34,18 +34,18 @@ class Console
             $msg = json_encode($msg, JSON_UNESCAPED_UNICODE);
         }
         $date = '进程ID:' . self::$pid . ' ' . date('Y-m-d H:i:s');
-        $msg = $date . ' ' . $msg . PHP_EOL;
+        $msg = $date . '【INFO】 ' . $msg . PHP_EOL;
         file_put_contents(self::FILE_DEBUG, $msg, FILE_APPEND | LOCK_EX);
         if ($isGBK) {
             $msg = iconv('UTF-8', 'gbk//IGNORE', $msg);
         }
-        echo $msg;
+        //echo $msg;
     }
 
     public static function logEOL()
     {
         self::init();
-        echo PHP_EOL;
+        //echo PHP_EOL;
         file_put_contents(self::FILE_DEBUG, PHP_EOL, FILE_APPEND | LOCK_EX);
     }
 
@@ -91,9 +91,9 @@ class Console
         } else {
             $msg = is_array($param) ? json_encode($param, true, JSON_UNESCAPED_UNICODE) : $param;
         }
-        $date = '进程ID ' . self::$pid . ' ' . date("Y-m-d H:i:s") . ":" . PHP_EOL;
+        $date = '进程ID ' . self::$pid . ' ' . date("Y-m-d H:i:s") . "【error】" . PHP_EOL;
         $msg = $date . $msg . PHP_EOL;
         file_put_contents(self::FILE_ERROR, $msg, FILE_APPEND | LOCK_EX);
-        echo $msg;
+        //echo $msg;
     }
 }

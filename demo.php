@@ -13,7 +13,7 @@ $db_sqlite_config = [
 
 $config1 = [
     'host' => 'https://yp.120ask.com',
-    'max_request' => 50,
+    'max_request' =>30,
     'list_url' => ['https://yp.120ask.com/search/0-0-1--0-0-0-0.html'],
     'preg_content' => '/\/detail\/(\d+)\.html/',
     'preg_list' => '/\/search\/0-0-\d+--0-0-0-0\.html/',
@@ -29,6 +29,6 @@ $spider->on_field = function ($data,$contentUrl) {
     \Gsons\lib\Console::log($data);
     return false;
 };
-$spider->start();
+$spider->exec();
 
 
