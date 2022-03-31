@@ -13,17 +13,17 @@ use Curl\Curl;
 
 class HttpCurl extends Curl
 {
-    //默认的useragent
+  
     private $userAgentArr = [
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36 Edg/84.0.522.63'
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.74 Safari/537.36 Edg/99.0.1150.55'
     ];
-    //默认的IP
+ 
     private $ipArr = [
-        '112.94.101.142',
-        '112.94.102.142',
-        '112.94.103.142',
-        '112.94.104.142',
-        '112.94.105.142'
+        '113.94.101.144',
+        '113.94.102.144',
+        '113.94.103.144',
+        '113.94.104.144',
+        '113.94.105.144'
     ];
 
     const TIME_OUT = 15;

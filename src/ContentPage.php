@@ -6,6 +6,7 @@ use Gsons\lib\Console;
 use Gsons\lib\HttpCurl;
 use Gsons\lib\Selector;
 use think\Db;
+use think\Exception;
 use \Thread;
 
 class ContentPage extends Thread
@@ -30,7 +31,9 @@ class ContentPage extends Thread
     {
         $this->spider = $spider;
         $this->contentUrl = $contentUrl;
-        $this->spider->store->count++;
+        $this->spider->store->synchronized(function ($store) {
+            $store->count++;
+        }, $this->spider->store);
     }
 
     public function run()
@@ -40,14 +43,19 @@ class ContentPage extends Thread
         $curl->setReferrer($this->contentUrl);
         $curl->get($this->contentUrl);
         $curl->close();
-        $this->spider->store->count--;
+        $this->spider->store->synchronized(function ($store) {
+            $store->count--;
+        }, $this->spider->store);
         if ($curl->error) {
             $this->spider->store->contentCountFail++;
             Console::error("request content url {$this->contentUrl} failed,{$curl->error_message}");
-            $this->spider->store->contentStack[]=$this->contentUrl;
+            $this->spider->store->contentStack[] = $this->contentUrl;
             return false;
         } else {
-            $this->spider->store->contentCount++;
+            //$this->spider->store->contentCount++;
+            $this->spider->store->synchronized(function ($store) {
+                $store->contentCount++;
+            }, $this->spider->store);
             Console::log("request content url {$this->contentUrl} success");
         }
 
@@ -80,9 +88,15 @@ class ContentPage extends Thread
             $data[$vo['name']] = $_temp;
         }
         if ($this->spider->on_field) {
-            $data=call_user_func($this->spider->on_field, $data,$this->contentUrl);
+            $data = call_user_func($this->spider->on_field, $data, $this->contentUrl,$content);
         }
-        if($data) Db::table($this->spider->config['db']['table'])->insert($data);
+        if ($data) {
+            try {
+                Db::table($this->spider->config['db']['table'])->insert($data);
+            } catch (Exception $e) {
+                Console::error($e);
+            }
+        }
     }
 
 }

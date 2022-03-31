@@ -73,10 +73,12 @@ UI;
 
     public function exec(){
         $this->start();
-        while ($this->isRunning()){
+        do{
             usleep(30);
             $this->showUi();
-        }
+        }while (
+            $this->isRunning()
+        );
         echo PHP_EOL.'application  exit!'.PHP_EOL;
     }
 
@@ -86,7 +88,9 @@ UI;
         $this->initList();
         $max_request = $this->config['max_request'];
         $thread_list=[];
-        while ($this->store->countStack() || $this->store->count>0) {
+
+        $t_last=time();
+        while ((time()-$t_last)<15) {
 
             //当每秒请求数过大时暂缓执行
             if ($this->store->count > $max_request) {
@@ -101,6 +105,7 @@ UI;
                     $key=uniqid().urlencode($listUrl);
                     $thread_list[$key]=new ListPage($this, $listUrl);
                     $thread_list[$key]->start();
+                    $t_last=time();
                 } else {
                     break;
                 }
@@ -112,20 +117,17 @@ UI;
                     $key=uniqid().urlencode($contentUrl);
                     $thread_list[$key]=new ContentPage($this, $contentUrl);
                     $thread_list[$key]->start();
+                    $t_last=time();
                 } else {
                     break;
                 }
             }
             foreach ($thread_list as &$thread){
-                if($thread->isTerminated()){
-                    $id=$thread->getCurrentThreadId();
-                    Console::error("thread $id is Terminated");
-                }
                 if(!$thread->isRunning()){
                     unset($thread);
                 }
             }
-            sleep(1);
+            sleep(rand(1,1));
         }
     }
 

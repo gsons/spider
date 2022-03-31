@@ -209,8 +209,8 @@ class Selector
         if (empty($result)) {
             return null;
         }
-
-        return count($result) > 1 ? $result : $result[0];
+        return  $result;
+        //return count($result) > 1 ? $result : $result[0];
     }
 
     public static function find_all($html, $selector)

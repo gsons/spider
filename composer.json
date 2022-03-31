@@ -15,5 +15,6 @@
     "psr-4": {
       "Gsons\\": "src"
     }
-  }
+  },
+  "disable-tls":true
 }

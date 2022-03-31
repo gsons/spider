@@ -33,7 +33,7 @@ class Console
         if (is_array($msg)) {
             $msg = json_encode($msg, JSON_UNESCAPED_UNICODE);
         }
-        $date = '进程ID:' . self::$pid . ' ' . date('Y-m-d H:i:s');
+        $date = 'Process Id:' . self::$pid . ' ' . date('Y-m-d H:i:s');
         $msg = $date . '【INFO】 ' . $msg . PHP_EOL;
         file_put_contents(self::FILE_DEBUG, $msg, FILE_APPEND | LOCK_EX);
         if ($isGBK) {
@@ -91,7 +91,7 @@ class Console
         } else {
             $msg = is_array($param) ? json_encode($param, true, JSON_UNESCAPED_UNICODE) : $param;
         }
-        $date = '进程ID ' . self::$pid . ' ' . date("Y-m-d H:i:s") . "【error】" . PHP_EOL;
+        $date = 'Process Id ' . self::$pid . ' ' . date("Y-m-d H:i:s") . "【error】" . PHP_EOL;
         $msg = $date . $msg . PHP_EOL;
         file_put_contents(self::FILE_ERROR, $msg, FILE_APPEND | LOCK_EX);
         //echo $msg;
